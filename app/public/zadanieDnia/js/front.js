@@ -1,24 +1,30 @@
 // Twój kod
-$(function () {
+$(function () { 
+
+    const nameInput = $('.new-todo');
+    const addButton = $('.add-button');
+
+    addButton.on('click', () => {
+        console.log(nameInput.val());
+        const name = nameInput.val();
+        addTask(name);
+    })
 
 
-
-    const addTask = function () {
+    const addTask = (task) => {
         //Send task to server
         fetch('/add', {
             method: 'POST',
             body: JSON.stringify({
-                id: 1,
-                name: '',
+                name: task,
                 done: false
             }),
             headers: {
                 'Content-Type': 'application/json',
             }
             //Action after server response
-        }).than(res => res.json())
-            .than(res => {
-                console.log(res);
-            })
+        }).then(res => res.json())
+        .catch(error => console.error('Error:', error))
+        .then(response => console.log('Success:', response));
     }
 });

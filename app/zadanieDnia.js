@@ -6,18 +6,20 @@ const fs = require('fs');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('./public/zadanieDnia'));
+app.use(express.static('./public/zadanieDniaVue'));
+app.use('/scripts', express.static(__dirname + '/node_modules/'));
 
-app.post('/add', (req, res => {
+app.post('/add', ((req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
             const taskList = JSON.parse(data);
-            const taskAdded = { id: req.body.id, name: req.body.name, done: req.body.done }
+            const id = taskList.length + 1;
+            const taskAdded = { id: id, name: req.body.name, done: req.body.done }
             taskList.push(taskAdded)
             const listToSave = JSON.stringify(taskList);
             fs.writeFile('./data/data.json', listToSave, (err => {
                 if (!err) {
-                    res.send("Task list saved")
+                    res.send(listToSave);
                 }
                 else {
                     console.log('Error save database file!');

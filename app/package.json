@@ -10,6 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.18.2",
-    "express": "^4.16.2"
+    "express": "^4.16.2",
+    "director": "^1.2.0",
+    "vue": "^2.1.8",
+    "todomvc-common": "^1.0.1",
+    "todomvc-app-css": "^2.0.0"
   }
 }
