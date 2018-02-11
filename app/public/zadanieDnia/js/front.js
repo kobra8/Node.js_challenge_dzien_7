@@ -1,8 +1,9 @@
 // Twój kod
-$(function () { 
+$(function () {
 
     const nameInput = $('.new-todo');
     const addButton = $('.add-button');
+    const list = $('.todo-list')
 
     addButton.on('click', () => {
         console.log(nameInput.val());
@@ -23,8 +24,12 @@ $(function () {
                 'Content-Type': 'application/json',
             }
             //Action after server response
-        }).then(res => res.json())
-        .catch(error => console.error('Error:', error))
-        .then(response => console.log('Success:', response));
+        }).then(res => res.json().forEach(element => {
+            list.appendChild
+        }))
+            .catch(error => console.error('Error:', error))
+            .then(response =>
+                console.log('Success:', response)
+            );
     }
 });

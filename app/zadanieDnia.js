@@ -6,7 +6,7 @@ const fs = require('fs');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(express.static('./public/zadanieDniaVue'));
+app.use(express.static('./public/zadanieDnia'));
 app.use('/scripts', express.static(__dirname + '/node_modules/'));
 
 app.post('/add', ((req, res) => {
