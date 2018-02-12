@@ -19,6 +19,7 @@ app.post('/add', ((req, res) => {
             const listToSave = JSON.stringify(taskList);
             fs.writeFile('./data/data.json', listToSave, (err => {
                 if (!err) {
+                    //Response to front
                     res.send(listToSave);
                 }
                 else {

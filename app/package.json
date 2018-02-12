@@ -4,7 +4,8 @@
   "description": "",
   "main": "przykladAjax.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon zadanieDnia.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +16,8 @@
     "vue": "^2.1.8",
     "todomvc-common": "^1.0.1",
     "todomvc-app-css": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.14.12"
   }
 }

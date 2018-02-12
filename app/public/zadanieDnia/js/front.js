@@ -11,7 +11,6 @@ $(function () {
         addTask(name);
     })
 
-
     const addTask = (task) => {
         //Send task to server
         fetch('/add', {
