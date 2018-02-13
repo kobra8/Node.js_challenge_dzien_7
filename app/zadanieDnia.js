@@ -9,6 +9,13 @@ app.use(bodyParser.json());
 app.use(express.static('./public/zadanieDnia'));
 app.use('/scripts', express.static(__dirname + '/node_modules/'));
 
+app.get('/getList', (req, res) => {
+    fs.readFile('./data/data.json', (err, data) => {
+        res.send(data);
+    })
+    
+})
+
 app.post('/add', ((req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
