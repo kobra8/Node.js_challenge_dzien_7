@@ -14,28 +14,52 @@ app.get('/getList', (req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         res.send(data);
     })
-    
+
 })
+
+//File module
+
+const fileRead = (callback) => {
+    fs.readFile('./data/data.json', (err, data) => {
+        if (!err) {
+          callback
+        }
+
+        else {
+            console.log('Error read database file!');
+            res.send('Error read database file!');
+        }
+    })
+}
+
+const fileWrite = (dataToSave) => {
+    fs.writeFile('./data/data.json', dataToSave, (err => {
+        if (!err) {
+            //Response to front
+            res.send(dataToSave);
+        }
+        else {
+            console.log('Error save database file!');
+            res.send('Error save database file!');
+        }
+    }))
+}
 
 //Add task
 app.post('/add', ((req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
             const taskList = JSON.parse(data);
-            const id = taskList.length + 1;
+            let maxId = 0;
+            taskList.filter(x => {
+                maxId = Math.max(x.id)
+                return maxId
+            })
+            let id = maxId + 1;
             const taskAdded = { id: id, name: req.body.name, done: req.body.done }
             taskList.push(taskAdded)
             const listToSave = JSON.stringify(taskList);
-            fs.writeFile('./data/data.json', listToSave, (err => {
-                if (!err) {
-                    //Response to front
-                    res.send(listToSave);
-                }
-                else {
-                    console.log('Error save database file!');
-                    res.send('Error save database file!');
-                }
-            }))
+            fileWrite(listToSave);
         }
         else {
             console.log('Error read database file!');
@@ -51,28 +75,16 @@ app.get('/delete/:taskId', ((req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
             const taskList = JSON.parse(data);
-            const index = taskList.findIndex(x => x.id == taskId);
-            if(index !== -1) {
-                taskList.splice(index);
-            }
-            const listToSave = JSON.stringify(taskList);
-            fs.writeFile('./data/data.json', listToSave, (err => {
-                if (!err) {
-                    //Response to front
-                    res.send(listToSave);
-                }
-                else {
-                    console.log('Error save database file!');
-                    res.send('Error save database file!');
-                }
-            }))
+            const taskListFiltered = taskList.filter(x => x.id != taskId)
+            const listToSave = JSON.stringify(taskListFiltered);
+            fileWrite(listToSave);
         }
-            else {
-                console.log('Error read database file!');
-                res.send('Error read database file!');
-            }
-        })
-    }))
+        else {
+            console.log('Error read database file!');
+            res.send('Error read database file!');
+        }
+    })
+}))
 
 
 app.listen(3000, () => {

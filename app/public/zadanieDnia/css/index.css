@@ -110,16 +110,45 @@ body {
 .add-button {
     display: block;
     position: absolute;
-    top: 15px;
+    top: 10px;
     right: 15px;
-    font-size: 30px;
+    font-size: 18px;
     color: #33c58d;
-    margin-bottom: 11px;
+    cursor: pointer;
+}
+.add-button:hover {
+    color: #cf9e17;
 }
 
-.add-button::after {
-    content:"+"
+.cancel-button {
+    display: block;
+    position: absolute;
+    top: 35px;
+    right: 15px;
+    font-size: 18px;
+    color: #cc9a9a;
+    cursor: pointer;
 }
+.cancel-button:hover {
+    color: #cf9e17;
+}
+
+.exit-button {
+    display: block;
+    position: absolute;
+    top: 35px;
+    right: 15px;
+    font-size: 18px;
+    color: #cc9a9a;
+    cursor: pointer;
+}
+.exit-button:hover {
+    color: #cf9e17;
+}
+
+/* .add-button::after {
+    content:"+"
+} */
 
 .main {
     position: relative;
@@ -182,6 +211,13 @@ body {
     width: 506px;
     padding: 12px 16px;
     margin: 0 0 0 43px;
+}
+.todo-list li.editing .add-button {
+    display: block;
+}
+
+.todo-list li.editing .exit-button {
+    display: block;
 }
 
 .todo-list li.editing .view {
@@ -246,6 +282,7 @@ body {
     color: #cc9a9a;
     margin-bottom: 11px;
     transition: color 0.2s ease-out;
+    cursor: pointer;
 }
 
 .todo-list li .destroy:hover {
@@ -261,6 +298,13 @@ body {
 }
 
 .todo-list li .edit {
+    display: none;
+}
+
+.todo-list li .add-button {
+    display: none;
+}
+.todo-list li .exit-button {
     display: none;
 }
 
