@@ -19,10 +19,10 @@ app.get('/getList', (req, res) => {
 
 //File module
 
-const fileRead = (callback) => {
+const fileRead = (callback, req, res) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
-          callback
+            callback(data, req, res);
         }
 
         else {
@@ -32,7 +32,7 @@ const fileRead = (callback) => {
     })
 }
 
-const fileWrite = (dataToSave) => {
+const fileWrite = (dataToSave, res) => {
     fs.writeFile('./data/data.json', dataToSave, (err => {
         if (!err) {
             //Response to front
@@ -45,46 +45,48 @@ const fileWrite = (dataToSave) => {
     }))
 }
 
-//Add task
-app.post('/add', ((req, res) => {
-    fs.readFile('./data/data.json', (err, data) => {
-        if (!err) {
-            const taskList = JSON.parse(data);
-            let maxId = 0;
-            taskList.filter(x => {
-                maxId = Math.max(x.id)
-                return maxId
-            })
-            let id = maxId + 1;
-            const taskAdded = { id: id, name: req.body.name, done: req.body.done }
-            taskList.push(taskAdded)
-            const listToSave = JSON.stringify(taskList);
-            fileWrite(listToSave);
-        }
-        else {
-            console.log('Error read database file!');
-            res.send('Error read database file!');
-        }
+//Task methods
+
+const addTask = (data, req, res) => {
+    const taskList = JSON.parse(data);
+    let maxId = 0;
+    taskList.filter(x => {
+        maxId = Math.max(x.id)
+        return maxId
     })
+    let id = maxId + 1;
+    const taskAdded = { id: id, name: req.body.name, done: req.body.done }
+    taskList.push(taskAdded)
+    const listToSave = JSON.stringify(taskList);
+    fileWrite(listToSave, res);
+}
+
+const deleteTask = (data, req, res) => {
+    const taskId = req.params.taskId
+    const taskList = JSON.parse(data);
+    const taskListFiltered = taskList.filter(x => x.id != taskId)
+    const listToSave = JSON.stringify(taskListFiltered);
+    fileWrite(listToSave, res);
+}
+
+//Add task
+
+app.post('/add', ((req, res) => {
+    fileRead(addTask, req, res)
 }))
 
 //Delete task
 
 app.get('/delete/:taskId', ((req, res) => {
-    const taskId = req.params.taskId
-    fs.readFile('./data/data.json', (err, data) => {
-        if (!err) {
-            const taskList = JSON.parse(data);
-            const taskListFiltered = taskList.filter(x => x.id != taskId)
-            const listToSave = JSON.stringify(taskListFiltered);
-            fileWrite(listToSave);
-        }
-        else {
-            console.log('Error read database file!');
-            res.send('Error read database file!');
-        }
-    })
+    fileRead(deleteTask, req, res)
 }))
+
+//Edit task
+
+app.post('/edit', (req, res)=> {
+    console.log(req.body.id);
+    console.log(req.body.name);
+})
 
 
 app.listen(3000, () => {

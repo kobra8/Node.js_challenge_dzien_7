@@ -36,7 +36,7 @@ $(document).ready(function () {
             $(`<div class="view">
             <input class="toggle" type="checkbox" ${checkedBox}> <label>${element.name}</label> <button class="destroy" id="${element.id}"></button>
             </div>
-            <input class="edit"> <button class="add-button">Save</button> <button class="exit-button">Exit</button>
+            <input class="edit"> <button class="edit-button" id="${element.id}">Save</button> <button class="exit-button">Exit</button>
             `).appendTo(listItem);
             list[0].appendChild(listItem);
             if (element.done) {
@@ -49,12 +49,24 @@ $(document).ready(function () {
                 })
             })
         })
+        const editButtons = $('.edit-button');
+        const editInput = $('.edit');
+        editButtons.each(function (index, value) {
+            let x = $(this).attr('id');
+            $(this).on('click', (x) => {
+                let taskId = x.target.id;
+                const name = editInput.val();
+                console.log("Edit Id", taskId);
+                editTask(name, taskId);
+            })
+        });
+
         const deleteButtons = $('.destroy');
         deleteButtons.each(function (index, value) {
             let x = $(this).attr('id');
             $(this).on('click', (x) => {
                 let taskId = x.target.id;
-                console.log("Delete Id",taskId);
+                console.log("Delete Id", taskId);
                 fetch(`delete/${taskId}`)
                     .then(resp => resp.json())
                     .then(response => {
@@ -79,9 +91,6 @@ $(document).ready(function () {
 
     }
 
-
-
-
     const addTask = (task) => {
         //Send task to server
         fetch('/add', {
@@ -100,6 +109,29 @@ $(document).ready(function () {
                 list.empty();
                 refreshList(response)
                 nameInput.val('');
+            }
+            )
+            .catch(error => console.error('Error:', error))
+    }
+
+    const editTask = (task, id) => {
+        //Send task to server
+        fetch('/add', {
+            method: 'POST',
+            body: JSON.stringify({
+                id: id,
+                name: task,
+                done: false
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            }
+            //Action after server response
+        })
+            .then(res => res.json())
+            .then(response => {
+                list.empty();
+                refreshList(response)
             }
             )
             .catch(error => console.error('Error:', error))
