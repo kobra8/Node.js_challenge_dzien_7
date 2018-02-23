@@ -19,10 +19,10 @@ app.get('/getList', (req, res) => {
 
 //File module
 
-const fileRead = (callback, req, res) => {
+const fileRead = (callback, req, res, status) => {
     fs.readFile('./data/data.json', (err, data) => {
         if (!err) {
-            callback(data, req, res);
+            callback(data, req, res, status);
         }
 
         else {
@@ -69,6 +69,22 @@ const deleteTask = (data, req, res) => {
     fileWrite(listToSave, res);
 }
 
+const editTask = (data, req, res) => {
+    const taskList = JSON.parse(data);
+    const taskId = req.body.id
+    const taskUpdated = { id: taskId, name: req.body.name, done: req.body.done };
+    const taskIndex = taskList.findIndex(x => x.id == taskId);
+    taskList[taskIndex] = taskUpdated
+    const listToSave = JSON.stringify(taskList);
+    fileWrite(listToSave, res);
+}
+
+const filterTasks = (data, req, res, status) => {
+    const taskList = JSON.parse(data);
+    const taskListFiltered = taskList.filter(x => x.done === status)
+    res.send(taskListFiltered)
+}
+
 //Add task
 
 app.post('/add', ((req, res) => {
@@ -83,12 +99,22 @@ app.get('/delete/:taskId', ((req, res) => {
 
 //Edit task
 
-app.post('/edit', (req, res)=> {
-    console.log(req.body.id);
-    console.log(req.body.name);
+app.post('/edit', (req, res) => {
+    fileRead(editTask, req, res)
+})
+//Filter active
+
+app.get('/active', (req, res) => {
+    fileRead(filterTasks, req, res, false)
+})
+//Filter completed
+
+app.get('/completed', (req, res) => {
+    fileRead(filterTasks, req, res, true)
 })
 
 
+//Listen
 app.listen(3000, () => {
     console.log('Serwer działa na porcie 3000');
 })

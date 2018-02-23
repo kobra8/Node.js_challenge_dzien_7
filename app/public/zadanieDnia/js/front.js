@@ -6,6 +6,10 @@ $(document).ready(function () {
     const cancelButton = $('.cancel-button');
     const list = $('.todo-list');
 
+    const active = $('.active')
+    const selected = $('.selected')
+    const completed = $('.completed')
+
     addButton.on('click', () => {
         const name = nameInput.val();
         addTask(name);
@@ -13,6 +17,18 @@ $(document).ready(function () {
 
     cancelButton.on('click', () => {
         nameInput.val('');
+    })
+
+    active.on('click', ()=> {
+        filterActive();
+    })
+    completed.on('click', ()=> {
+        filterCompleted();
+    })
+
+    selected.on('click', ()=> {
+        list.empty();
+        getList();
     })
 
 
@@ -30,11 +46,12 @@ $(document).ready(function () {
 
     //Render DOM elements by response object
     const refreshList = (response) => {
+        const taskList = response;
         response.forEach(element => {
             const checkedBox = element.done ? "checked" : "";
             const listItem = document.createElement('li');
             $(`<div class="view">
-            <input class="toggle" type="checkbox" ${checkedBox}> <label>${element.name}</label> <button class="destroy" id="${element.id}"></button>
+            <input class="toggle" id="${element.id}" type="checkbox" ${checkedBox}> <label>${element.name}</label> <button class="destroy" id="${element.id}"></button>
             </div>
             <input class="edit"> <button class="edit-button" id="${element.id}">Save</button> <button class="exit-button">Exit</button>
             `).appendTo(listItem);
@@ -51,22 +68,33 @@ $(document).ready(function () {
         })
         const editButtons = $('.edit-button');
         const editInput = $('.edit');
+        const doneInput = $('.toggle');
         editButtons.each(function (index, value) {
             let x = $(this).attr('id');
             $(this).on('click', (x) => {
                 let taskId = x.target.id;
-                const name = editInput.val();
-                console.log("Edit Id", taskId);
-                editTask(name, taskId);
+                const name = editInput[index].value;
+                const done = doneInput[index].defaultChecked;
+                editTask(taskId, name, done);
             })
         });
+
+        doneInput.each(function(index, value) {
+            let x = $(this).attr('id');
+            $(this).on('click', (x)=> {
+                let taskId = x.target.id;
+                const name = taskList[index].name;
+                const doneStatus = doneInput[index].defaultChecked; 
+                const doneStatusUpdated = !doneStatus;
+                editTask(taskId, name, doneStatusUpdated);
+            })
+        })
 
         const deleteButtons = $('.destroy');
         deleteButtons.each(function (index, value) {
             let x = $(this).attr('id');
             $(this).on('click', (x) => {
                 let taskId = x.target.id;
-                console.log("Delete Id", taskId);
                 fetch(`delete/${taskId}`)
                     .then(resp => resp.json())
                     .then(response => {
@@ -114,14 +142,14 @@ $(document).ready(function () {
             .catch(error => console.error('Error:', error))
     }
 
-    const editTask = (task, id) => {
+    const editTask = (id, task, done) => {
         //Send task to server
-        fetch('/add', {
+        fetch('/edit', {
             method: 'POST',
             body: JSON.stringify({
                 id: id,
                 name: task,
-                done: false
+                done: done
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -136,6 +164,31 @@ $(document).ready(function () {
             )
             .catch(error => console.error('Error:', error))
     }
+
+    //Filter list
+
+    const filterActive = () => {
+        fetch('/active')
+            .then(resp => resp.json())
+            .then(response => {
+                list.empty();
+                refreshList(response)
+            }
+            )
+            .catch(err => console.log(err));
+    }
+
+    const filterCompleted = () => {
+        fetch('/completed')
+            .then(resp => resp.json())
+            .then(response => {
+                list.empty();
+                refreshList(response)
+            }
+            )
+            .catch(err => console.log(err));
+    }
+
 
     getList();
 });
